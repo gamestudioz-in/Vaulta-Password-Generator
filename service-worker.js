@@ -1,9 +1,9 @@
 const CACHE_NAME = 'vaulta-password-generator-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/icon192.png',
-  '/icon512.png',
+  './',
+  './index.html',
+  './icon192.png',
+  './icon512.png',
   // Add any other assets you want to cache offline
 ];
 
