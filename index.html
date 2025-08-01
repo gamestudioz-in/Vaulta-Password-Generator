@@ -1126,15 +1126,19 @@
             }
         });
     </script>
-    <script>
-        if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('service-worker.js')
-      .then(reg => console.log('Service Worker is registered!', reg))
-      .catch(err => console.log('Service Worker registration failed: ', err));
+   <script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/service-worker.js')
+    .then(function(registration) {
+      console.log('ServiceWorker registered successfully');
+    })
+    .catch(function(error) {
+      console.log('ServiceWorker registration failed: ', error);
+    });
   });
 }
-    </script>
+</script>
+
 </body>
 </html>
