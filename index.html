@@ -6,7 +6,7 @@
     <title>Random Password Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+       <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
@@ -23,6 +23,8 @@
                         'pulse-soft': 'pulseSoft 2s ease-in-out infinite',
                         'theme-switch': 'themeSwitch 0.3s ease-in-out',
                         'splash-fade-out': 'splashFadeOut 0.8s ease-in-out forwards',
+                        'modal-fade-in': 'modalFadeIn 0.3s ease-out',
+                        'modal-scale-in': 'modalScaleIn 0.3s ease-out',
                     },
                     keyframes: {
                         fadeIn: {
@@ -51,6 +53,14 @@
                         splashFadeOut: {
                             '0%': { opacity: '1' },
                             '100%': { opacity: '0', visibility: 'hidden' }
+                        },
+                        modalFadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        modalScaleIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95) translateY(-10px)' },
+                            '100%': { opacity: '1', transform: 'scale(1) translateY(0)' }
                         }
                     }
                 }
@@ -61,12 +71,12 @@
 <body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 min-h-screen transition-all duration-500">
     
     <!-- Splash Screen -->
-    <div id="splashScreen" class="fixed inset-0 bg-white flex flex-col items-center justify-center z-50">
+    <div id="splashScreen" class="fixed inset-0 bg-white dark:bg-gray-900 flex flex-col items-center justify-center z-50">
         <div class="animate-bounce mb-6">
             <i class="fas fa-shield-alt text-blue-600 text-6xl animate-pulse-soft"></i>
         </div>
-        <h1 class="text-3xl font-bold text-gray-800 mb-2 text-center">Vaulta<br>Password Generator</h1>
-        <div class="text-gray-600 text-lg font-medium flex items-center">
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2 text-center">Vaulta<br>Password Generator</h1>
+        <div class="text-gray-600 dark:text-gray-300 text-lg font-medium flex items-center">
             Made with <span class="text-red-500 mx-2 text-xl">❤</span> by Yasir Divde
         </div>
     </div>
@@ -75,6 +85,25 @@
     <button id="themeToggle" class="absolute top-2 left-4 p-2 sm:p-3 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border dark:border-gray-600 z-40">
         <i id="themeIcon" class="fas fa-moon text-lg sm:text-xl transition-transform duration-300"></i>
     </button>
+
+    <!-- Custom Modal -->
+    <div id="customModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div id="modalContent" class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 animate-modal-scale-in border dark:border-gray-600">
+            <div class="flex items-center mb-4">
+                <i id="modalIcon" class="fas fa-question-circle text-blue-600 dark:text-blue-400 text-2xl mr-3"></i>
+                <h3 id="modalTitle" class="text-lg font-semibold text-gray-800 dark:text-gray-100">Confirm Action</h3>
+            </div>
+            <p id="modalMessage" class="text-gray-600 dark:text-gray-300 mb-6"></p>
+            <div id="modalInput" class="mb-4 hidden">
+                <label id="modalInputLabel" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Enter value:</label>
+                <input type="text" id="modalInputField" class="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+            </div>
+            <div class="flex space-x-3 justify-end">
+                <button id="modalCancel" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-all duration-300 transform hover:scale-105">Cancel</button>
+                <button id="modalConfirm" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105">Confirm</button>
+            </div>
+        </div>
+    </div>
 
     <div class="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         <!-- Header -->
@@ -372,21 +401,47 @@
         .splash-fade-out {
             animation: splashFadeOut 0.8s ease-in-out forwards;
         }
+
+        /* Modal animations */
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes modalScaleIn {
+            from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .animate-modal-fade-in {
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        .animate-modal-scale-in {
+            animation: modalScaleIn 0.3s ease-out;
+        }
     </style>
 
     <script>
-        // Initialize theme before page load
+        // Initialize theme before page load - Default to dark mode on first visit
         (function() {
             try {
                 const savedTheme = localStorage.getItem('passwordgen-theme');
-                const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-                const theme = savedTheme || systemTheme;
                 
-                if (theme === 'dark') {
+                // If no saved theme, it's first visit - default to dark mode
+                if (!savedTheme) {
+                    localStorage.setItem('passwordgen-theme', 'dark');
                     document.documentElement.classList.add('dark');
+                } else {
+                    // Use saved theme preference
+                    if (savedTheme === 'dark') {
+                        document.documentElement.classList.add('dark');
+                    }
                 }
             } catch (error) {
                 console.log('Theme initialization error:', error);
+                // Default to dark mode if error
+                document.documentElement.classList.add('dark');
             }
         })();
 
@@ -399,13 +454,14 @@
                     setTimeout(() => {
                         splashScreen.style.display = 'none';
                     }, 800);
-                }, 1500); // Show splash for 1.5 seconds
+                }, 1500);
             }
         });
 
         class PasswordGenerator {
             constructor() {
                 this.currentTheme = this.getInitialTheme();
+                this.modalResolver = null;
                 this.initializeElements();
                 this.bindEvents();
                 this.updateThemeIcon();
@@ -418,11 +474,11 @@
             getInitialTheme() {
                 try {
                     const savedTheme = localStorage.getItem('passwordgen-theme');
-                    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-                    return savedTheme || systemTheme;
+                    // Default to dark mode if no saved theme
+                    return savedTheme || 'dark';
                 } catch (error) {
                     console.log('Theme detection error:', error);
-                    return 'light';
+                    return 'dark'; // Default to dark mode
                 }
             }
 
@@ -474,6 +530,18 @@
                 // Toast
                 this.toast = document.getElementById('toast');
                 this.toastMessage = document.getElementById('toastMessage');
+
+                // Modal elements
+                this.modal = document.getElementById('customModal');
+                this.modalContent = document.getElementById('modalContent');
+                this.modalIcon = document.getElementById('modalIcon');
+                this.modalTitle = document.getElementById('modalTitle');
+                this.modalMessage = document.getElementById('modalMessage');
+                this.modalInput = document.getElementById('modalInput');
+                this.modalInputLabel = document.getElementById('modalInputLabel');
+                this.modalInputField = document.getElementById('modalInputField');
+                this.modalCancel = document.getElementById('modalCancel');
+                this.modalConfirm = document.getElementById('modalConfirm');
             }
 
             bindEvents() {
@@ -538,6 +606,27 @@
                         this.vaultTab.addEventListener('click', () => this.showVault());
                     }
 
+                    // Modal events
+                    if (this.modalCancel) {
+                        this.modalCancel.addEventListener('click', () => this.hideModal(false));
+                    }
+                    
+                    if (this.modalConfirm) {
+                        this.modalConfirm.addEventListener('click', () => {
+                            const inputValue = this.modalInputField ? this.modalInputField.value : null;
+                            this.hideModal(inputValue !== null ? inputValue : true);
+                        });
+                    }
+
+                    // Close modal when clicking outside
+                    if (this.modal) {
+                        this.modal.addEventListener('click', (e) => {
+                            if (e.target === this.modal) {
+                                this.hideModal(false);
+                            }
+                        });
+                    }
+
                     // Touch events for mobile
                     this.addTouchEvents();
                     
@@ -551,10 +640,99 @@
                             e.preventDefault();
                             this.generatePasswordWithAnimation();
                         }
+                        
+                        // Handle modal keyboard events
+                        if (this.modal && !this.modal.classList.contains('hidden')) {
+                            if (e.key === 'Escape') {
+                                this.hideModal(false);
+                            } else if (e.key === 'Enter') {
+                                const inputValue = this.modalInputField ? this.modalInputField.value : null;
+                                this.hideModal(inputValue !== null ? inputValue : true);
+                            }
+                        }
                     });
                 } catch (error) {
                     console.error('Error binding events:', error);
                 }
+            }
+
+            showModal(title, message, type = 'confirm', inputLabel = '', defaultValue = '') {
+                return new Promise((resolve) => {
+                    this.modalResolver = resolve;
+                    
+                    // Set modal content
+                    if (this.modalTitle) this.modalTitle.textContent = title;
+                    if (this.modalMessage) this.modalMessage.textContent = message;
+                    
+                    // Set icon based on type
+                    if (this.modalIcon) {
+                        switch (type) {
+                            case 'confirm':
+                                this.modalIcon.className = 'fas fa-question-circle text-blue-600 dark:text-blue-400 text-2xl mr-3';
+                                break;
+                            case 'alert':
+                                this.modalIcon.className = 'fas fa-exclamation-circle text-yellow-600 dark:text-yellow-400 text-2xl mr-3';
+                                break;
+                            case 'error':
+                                this.modalIcon.className = 'fas fa-times-circle text-red-600 dark:text-red-400 text-2xl mr-3';
+                                break;
+                            case 'prompt':
+                                this.modalIcon.className = 'fas fa-edit text-green-600 dark:text-green-400 text-2xl mr-3';
+                                break;
+                        }
+                    }
+                    
+                    // Handle input field for prompt
+                    if (type === 'prompt' && this.modalInput && this.modalInputField && this.modalInputLabel) {
+                        this.modalInput.classList.remove('hidden');
+                        this.modalInputLabel.textContent = inputLabel;
+                        this.modalInputField.value = defaultValue;
+                        setTimeout(() => {
+                            this.modalInputField.focus();
+                            this.modalInputField.select();
+                        }, 100);
+                    } else if (this.modalInput) {
+                        this.modalInput.classList.add('hidden');
+                    }
+                    
+                    // Show modal
+                    if (this.modal) {
+                        this.modal.classList.remove('hidden');
+                        this.modal.classList.add('animate-modal-fade-in');
+                    }
+                    
+                    if (this.modalContent) {
+                        this.modalContent.classList.add('animate-modal-scale-in');
+                    }
+                });
+            }
+
+            hideModal(result) {
+                if (this.modal) {
+                    this.modal.classList.add('hidden');
+                    this.modal.classList.remove('animate-modal-fade-in');
+                }
+                
+                if (this.modalContent) {
+                    this.modalContent.classList.remove('animate-modal-scale-in');
+                }
+                
+                if (this.modalResolver) {
+                    this.modalResolver(result);
+                    this.modalResolver = null;
+                }
+            }
+
+            async customAlert(message, title = 'Alert') {
+                return await this.showModal(title, message, 'alert');
+            }
+
+            async customConfirm(message, title = 'Confirm') {
+                return await this.showModal(title, message, 'confirm');
+            }
+
+            async customPrompt(message, title = 'Input', inputLabel = 'Enter value:', defaultValue = '') {
+                return await this.showModal(title, message, 'prompt', inputLabel, defaultValue);
             }
 
             toggleTheme() {
@@ -571,6 +749,7 @@
                     this.applyTheme();
                     this.updateThemeIcon();
                     
+                    // Save theme preference
                     localStorage.setItem('passwordgen-theme', this.currentTheme);
                     this.showToast('Switched to ' + this.currentTheme + ' mode');
                 } catch (error) {
@@ -612,10 +791,7 @@
                         const min = parseInt(this.lengthSlider.min);
                         const percentage = ((value - min) / (max - min)) * 100;
                         
-                        // Update fill width with single blue color
                         this.sliderFill.style.width = percentage + '%';
-                        
-                        // Keep it blue always
                         this.sliderFill.className = 'absolute top-0 left-0 h-3 rounded-lg transition-all duration-300 opacity-60 bg-blue-500';
                     }
                 } catch (error) {
@@ -625,7 +801,6 @@
 
             addSmoothInteractions() {
                 try {
-                    // Add smooth hover effects to all buttons
                     const buttons = document.querySelectorAll('button');
                     buttons.forEach(button => {
                         button.addEventListener('mouseenter', () => {
@@ -638,7 +813,6 @@
                         });
                     });
 
-                    // Add smooth focus effects
                     const inputs = document.querySelectorAll('input');
                     inputs.forEach(input => {
                         input.addEventListener('focus', () => {
@@ -655,7 +829,6 @@
 
             addTouchEvents() {
                 try {
-                    // Add touch feedback for mobile
                     const interactiveElements = document.querySelectorAll('button, input[type="checkbox"]');
                     interactiveElements.forEach(element => {
                         element.addEventListener('touchstart', () => {
@@ -716,7 +889,6 @@
                         this.generateBtn.disabled = false;
                     }
                     
-                    // Add success animation to password field
                     if (this.passwordOutput) {
                         this.passwordOutput.style.transform = 'scale(1.02)';
                         this.passwordOutput.classList.add('bg-green-50', 'dark:bg-green-900');
@@ -870,12 +1042,12 @@
                     const user = this.username && this.username.value ? this.username.value.trim() : '';
                     
                     if (!password || password === 'Please select at least one character type') {
-                        this.showToast('Please generate a password first!', 'error');
+                        await this.customAlert('Please generate a password first!', 'Missing Password');
                         return;
                     }
                     
                     if (!app) {
-                        this.showToast('Please enter an app/website name!', 'error');
+                        await this.customAlert('Please enter an app/website name!', 'Missing App Name');
                         return;
                     }
                     
@@ -949,8 +1121,16 @@
                             entriesHtml += '<div class="flex-1 min-w-0">';
                             entriesHtml += '<div class="flex flex-col sm:flex-row sm:items-start sm:space-x-4">';
                             entriesHtml += '<div class="flex-1 min-w-0">';
+                            // App name with icon
+                            entriesHtml += '<div class="flex items-center mb-1">';
+                            entriesHtml += '<i class="fas fa-globe text-blue-600 dark:text-blue-400 mr-2 text-sm"></i>';
                             entriesHtml += '<h4 class="font-medium text-gray-800 dark:text-gray-100 truncate">' + this.escapeHtml(entry.app) + '</h4>';
+                            entriesHtml += '</div>';
+                            // Username with icon
+                            entriesHtml += '<div class="flex items-center mb-1">';
+                            entriesHtml += '<i class="fas fa-user text-green-600 dark:text-green-400 mr-2 text-sm"></i>';
                             entriesHtml += '<p class="text-sm text-gray-600 dark:text-gray-300 truncate">' + this.escapeHtml(entry.username) + '</p>';
+                            entriesHtml += '</div>';
                             entriesHtml += '<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Created: ' + entry.created + '</p>';
                             entriesHtml += '</div>';
                             entriesHtml += '<div class="flex items-center space-x-2 mt-2 sm:mt-0">';
@@ -964,6 +1144,7 @@
                             entriesHtml += '<div class="flex flex-wrap items-center gap-2 lg:ml-4">';
                             entriesHtml += '<input type="password" value="' + this.escapeHtml(entry.password) + '" class="w-full sm:w-32 lg:w-40 p-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 text-gray-800 dark:text-gray-100 rounded-lg font-mono text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200" readonly>';
                             entriesHtml += '<div class="flex space-x-2">';
+                            entriesHtml += '<button onclick="window.passwordGen.editPassword(' + entry.id + ')" class="px-2 sm:px-3 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-all duration-200 transform hover:scale-105"><i class="fas fa-edit text-sm"></i></button>';
                             entriesHtml += '<button onclick="window.passwordGen.togglePasswordVisibility(this)" class="px-2 sm:px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-all duration-200 transform hover:scale-105"><i class="fas fa-eye text-sm"></i></button>';
                             entriesHtml += '<button onclick="window.passwordGen.copyVaultPassword(\'' + this.escapeHtml(entry.password) + '\')" class="px-2 sm:px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 transform hover:scale-105"><i class="fas fa-copy text-sm"></i></button>';
                             entriesHtml += '<button onclick="window.passwordGen.deleteVaultEntry(' + entry.id + ')" class="px-2 sm:px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 transform hover:scale-105"><i class="fas fa-trash text-sm"></i></button>';
@@ -984,6 +1165,37 @@
                 if (strength >= 60) return 'bg-blue-500';
                 if (strength >= 40) return 'bg-yellow-500';
                 return 'bg-red-500';
+            }
+
+            async editPassword(id) {
+                try {
+                    let vault = JSON.parse(localStorage.getItem('passwordVault') || '[]');
+                    const entry = vault.find(item => item.id === id);
+                    
+                    if (entry) {
+                        const newPassword = await this.customPrompt(
+                            'Enter a new password for ' + entry.app,
+                            'Edit Password',
+                            'New Password:',
+                            entry.password
+                        );
+                        
+                        if (newPassword && newPassword.trim() !== '') {
+                            entry.password = newPassword.trim();
+                            entry.strength = this.calculateStrength(entry.password);
+                            
+                            // Update vault in localStorage
+                            localStorage.setItem('passwordVault', JSON.stringify(vault));
+                            
+                            // Re-render vault
+                            this.renderVault();
+                            this.showToast('Password updated successfully!');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error editing password:', error);
+                    this.showToast('Error updating password', 'error');
+                }
             }
 
             togglePasswordVisibility(button) {
@@ -1015,9 +1227,14 @@
                 }
             }
 
-            deleteVaultEntry(id) {
+            async deleteVaultEntry(id) {
                 try {
-                    if (confirm('Are you sure you want to delete this password?')) {
+                    const confirmed = await this.customConfirm(
+                        'Are you sure you want to delete this password? This action cannot be undone.',
+                        'Delete Password'
+                    );
+                    
+                    if (confirmed) {
                         let vault = JSON.parse(localStorage.getItem('passwordVault') || '[]');
                         vault = vault.filter(entry => entry.id !== id);
                         localStorage.setItem('passwordVault', JSON.stringify(vault));
@@ -1034,9 +1251,14 @@
                 this.renderVault();
             }
 
-            clearAllVault() {
+            async clearAllVault() {
                 try {
-                    if (confirm('Are you sure you want to clear all passwords? This action cannot be undone.')) {
+                    const confirmed = await this.customConfirm(
+                        'Are you sure you want to clear all passwords? This action cannot be undone and will permanently delete all saved passwords.',
+                        'Clear All Passwords'
+                    );
+                    
+                    if (confirmed) {
                         localStorage.removeItem('passwordVault');
                         this.renderVault();
                         this.showToast('Vault cleared!');
@@ -1126,7 +1348,7 @@
             }
         });
     </script>
-   <script>
+       <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('./service-worker.js')
@@ -1139,6 +1361,5 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
-
 </body>
 </html>
