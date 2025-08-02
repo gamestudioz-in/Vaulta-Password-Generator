@@ -6,7 +6,7 @@
     <title>Random Password Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-       <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
@@ -86,6 +86,65 @@
         <i id="themeIcon" class="fas fa-moon text-lg sm:text-xl transition-transform duration-300"></i>
     </button>
 
+    <!-- Security Setup Modal -->
+    <div id="securitySetupModal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 max-w-lg w-full mx-4 border dark:border-gray-600">
+            <div class="text-center mb-6">
+                <i class="fas fa-shield-alt text-blue-600 dark:text-blue-400 text-4xl mb-4"></i>
+                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Security Setup Required</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-300">To protect your passwords from accidental deletion, please set up a security PIN and recovery question. This ensures only you can delete saved passwords.</p>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Set 4-Digit PIN</label>
+                    <input type="password" id="setupPin" maxlength="4" placeholder="Enter PIN" 
+                           class="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-xl font-mono">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Confirm PIN</label>
+                    <input type="password" id="confirmPin" maxlength="4" placeholder="Re Enter PIN" 
+                           class="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-xl font-mono">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Security Question</label>
+                    <select id="securityQuestion" class="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select a security question</option>
+                        <option value="pet">What was the name of your first pet?</option>
+                        <option value="school">What was the name of your first school?</option>
+                        <option value="city">In which city were you born?</option>
+                        <option value="mother">What is your mother's maiden name?</option>
+                        <option value="friend">What was the name of your best childhood friend?</option>
+                        <option value="car">What was the model of your first car?</option>
+                        <option value="teacher">What was the name of your favorite teacher?</option>
+                        <option value="street">On which street did you grow up?</option>
+                        <option value="book">What is your favorite book?</option>
+                        <option value="movie">What is your favorite movie?</option>
+                        <option value="food">What is your favorite food?</option>
+                        <option value="sport">What is your favorite sport?</option>
+                        <option value="subject">What was your favorite school subject?</option>
+                        <option value="nickname">What was your childhood nickname?</option>
+                        <option value="company">What was the name of your first company/job?</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Your Answer</label>
+                    <input type="text" id="securityAnswer" placeholder="Enter your answer" 
+                           class="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <button id="saveSecurityBtn" class="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 font-medium">
+                    <i class="fas fa-save mr-2"></i>Save Security Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Custom Modal -->
     <div id="customModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div id="modalContent" class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 animate-modal-scale-in border dark:border-gray-600">
@@ -94,9 +153,39 @@
                 <h3 id="modalTitle" class="text-lg font-semibold text-gray-800 dark:text-gray-100">Confirm Action</h3>
             </div>
             <p id="modalMessage" class="text-gray-600 dark:text-gray-300 mb-6"></p>
-            <div id="modalInput" class="mb-4 hidden">
-                <label id="modalInputLabel" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Enter value:</label>
-                <input type="text" id="modalInputField" class="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+            <div id="modalInputs" class="space-y-4 mb-6 hidden">
+                <!-- PIN Input -->
+                <div id="pinInputDiv" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Enter your 4-digit PIN</label>
+                    <input type="password" id="modalPinInput" maxlength="4" placeholder="••••" 
+                           class="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-xl font-mono">
+                    <div id="pinError" class="text-red-500 text-xs mt-1 hidden">Incorrect PIN. Try again.</div>
+                    <button id="forgotPinBtn" class="text-blue-600 dark:text-blue-400 text-xs hover:underline mt-2">Forgot PIN?</button>
+                </div>
+                
+                <!-- Security Question -->
+                <div id="securityQuestionDiv" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" id="questionLabel">Security Question</label>
+                    <input type="text" id="modalSecurityAnswer" placeholder="Enter your answer (case-insensitive)" 
+                           class="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <div id="securityError" class="text-red-500 text-xs mt-1 hidden">Incorrect answer. Please try again.</div>
+                </div>
+                
+                <!-- PIN Reset -->
+                <div id="pinResetDiv" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Enter new 4-digit PIN</label>
+                    <input type="password" id="newPinInput" maxlength="4" placeholder="••••" 
+                           class="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-xl font-mono">
+                </div>
+                
+                <!-- Confirmation Text -->
+                <div id="confirmationTextDiv" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type the following text to confirm complete vault deletion:</label>
+                    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 rounded text-center font-mono text-sm mb-3 text-red-800 dark:text-red-200">DELETE ALL PASSWORDS</div>
+                    <input type="text" id="confirmationTextInput" placeholder="Type the confirmation text exactly as shown above" 
+                           class="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <div id="confirmationError" class="text-red-500 text-xs mt-1 hidden">Text doesn't match. Type exactly: DELETE ALL PASSWORDS</div>
+                </div>
             </div>
             <div class="flex space-x-3 justify-end">
                 <button id="modalCancel" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-all duration-300 transform hover:scale-105">Cancel</button>
@@ -420,6 +509,12 @@
         .animate-modal-scale-in {
             animation: modalScaleIn 0.3s ease-out;
         }
+
+        /* PIN input styling */
+        input[type="password"][maxlength="4"] {
+            letter-spacing: 0.5em;
+            padding-left: 1.5em;
+        }
     </style>
 
     <script>
@@ -462,9 +557,12 @@
             constructor() {
                 this.currentTheme = this.getInitialTheme();
                 this.modalResolver = null;
+                this.securityState = 'pin'; // 'pin', 'security', 'reset'
+                this.currentDeleteAction = null;
                 this.initializeElements();
                 this.bindEvents();
                 this.updateThemeIcon();
+                this.checkSecuritySetup();
                 this.loadVault();
                 this.generatePassword();
                 this.addSmoothInteractions();
@@ -479,6 +577,20 @@
                 } catch (error) {
                     console.log('Theme detection error:', error);
                     return 'dark'; // Default to dark mode
+                }
+            }
+
+            checkSecuritySetup() {
+                const security = localStorage.getItem('vaultSecurity');
+                if (!security) {
+                    this.showSecuritySetup();
+                }
+            }
+
+            showSecuritySetup() {
+                const modal = document.getElementById('securitySetupModal');
+                if (modal) {
+                    modal.classList.remove('hidden');
                 }
             }
 
@@ -537,15 +649,60 @@
                 this.modalIcon = document.getElementById('modalIcon');
                 this.modalTitle = document.getElementById('modalTitle');
                 this.modalMessage = document.getElementById('modalMessage');
-                this.modalInput = document.getElementById('modalInput');
-                this.modalInputLabel = document.getElementById('modalInputLabel');
-                this.modalInputField = document.getElementById('modalInputField');
                 this.modalCancel = document.getElementById('modalCancel');
                 this.modalConfirm = document.getElementById('modalConfirm');
+
+                // Security setup elements
+                this.securitySetupModal = document.getElementById('securitySetupModal');
+                this.setupPin = document.getElementById('setupPin');
+                this.confirmPin = document.getElementById('confirmPin');
+                this.securityQuestion = document.getElementById('securityQuestion');
+                this.securityAnswer = document.getElementById('securityAnswer');
+                this.saveSecurityBtn = document.getElementById('saveSecurityBtn');
+
+                // Security modal elements
+                this.modalInputs = document.getElementById('modalInputs');
+                this.pinInputDiv = document.getElementById('pinInputDiv');
+                this.modalPinInput = document.getElementById('modalPinInput');
+                this.pinError = document.getElementById('pinError');
+                this.forgotPinBtn = document.getElementById('forgotPinBtn');
+                this.securityQuestionDiv = document.getElementById('securityQuestionDiv');
+                this.questionLabel = document.getElementById('questionLabel');
+                this.modalSecurityAnswer = document.getElementById('modalSecurityAnswer');
+                this.securityError = document.getElementById('securityError');
+                this.pinResetDiv = document.getElementById('pinResetDiv');
+                this.newPinInput = document.getElementById('newPinInput');
+                this.confirmationTextDiv = document.getElementById('confirmationTextDiv');
+                this.confirmationTextInput = document.getElementById('confirmationTextInput');
+                this.confirmationError = document.getElementById('confirmationError');
             }
 
             bindEvents() {
                 try {
+                    // Security setup events
+                    if (this.saveSecurityBtn) {
+                        this.saveSecurityBtn.addEventListener('click', () => this.saveSecuritySettings());
+                    }
+
+                    // PIN input formatting
+                    if (this.setupPin) {
+                        this.setupPin.addEventListener('input', (e) => this.formatPinInput(e.target));
+                    }
+                    if (this.confirmPin) {
+                        this.confirmPin.addEventListener('input', (e) => this.formatPinInput(e.target));
+                    }
+                    if (this.modalPinInput) {
+                        this.modalPinInput.addEventListener('input', (e) => this.formatPinInput(e.target));
+                    }
+                    if (this.newPinInput) {
+                        this.newPinInput.addEventListener('input', (e) => this.formatPinInput(e.target));
+                    }
+
+                    // Forgot PIN button
+                    if (this.forgotPinBtn) {
+                        this.forgotPinBtn.addEventListener('click', () => this.showSecurityQuestion());
+                    }
+
                     // Theme toggle
                     if (this.themeToggle) {
                         this.themeToggle.addEventListener('click', () => this.toggleTheme());
@@ -612,10 +769,7 @@
                     }
                     
                     if (this.modalConfirm) {
-                        this.modalConfirm.addEventListener('click', () => {
-                            const inputValue = this.modalInputField ? this.modalInputField.value : null;
-                            this.hideModal(inputValue !== null ? inputValue : true);
-                        });
+                        this.modalConfirm.addEventListener('click', () => this.handleModalConfirm());
                     }
 
                     // Close modal when clicking outside
@@ -646,8 +800,7 @@
                             if (e.key === 'Escape') {
                                 this.hideModal(false);
                             } else if (e.key === 'Enter') {
-                                const inputValue = this.modalInputField ? this.modalInputField.value : null;
-                                this.hideModal(inputValue !== null ? inputValue : true);
+                                this.handleModalConfirm();
                             }
                         }
                     });
@@ -656,54 +809,312 @@
                 }
             }
 
-            showModal(title, message, type = 'confirm', inputLabel = '', defaultValue = '') {
+            formatPinInput(input) {
+                // Only allow digits
+                input.value = input.value.replace(/\D/g, '');
+            }
+
+            async saveSecuritySettings() {
+                try {
+                    const pin = this.setupPin.value.trim();
+                    const confirmPin = this.confirmPin.value.trim();
+                    const question = this.securityQuestion.value;
+                    const answer = this.securityAnswer.value.trim().toLowerCase();
+
+                    if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+                        this.showToast('PIN must be exactly 4 digits', 'error');
+                        return;
+                    }
+
+                    if (pin !== confirmPin) {
+                        this.showToast('PIN confirmation does not match', 'error');
+                        return;
+                    }
+
+                    if (!question) {
+                        this.showToast('Please select a security question', 'error');
+                        return;
+                    }
+
+                    if (answer.length < 2) {
+                        this.showToast('Security answer must be at least 2 characters', 'error');
+                        return;
+                    }
+
+                    // Hash the PIN and answer for security
+                    const hashedPin = await this.hashString(pin);
+                    const hashedAnswer = await this.hashString(answer);
+
+                    const securityData = {
+                        pin: hashedPin,
+                        question: question,
+                        answer: hashedAnswer,
+                        setup: Date.now()
+                    };
+
+                    localStorage.setItem('vaultSecurity', JSON.stringify(securityData));
+                    
+                    // Hide setup modal
+                    if (this.securitySetupModal) {
+                        this.securitySetupModal.classList.add('hidden');
+                    }
+
+                    this.showToast('Security settings saved successfully!');
+                } catch (error) {
+                    console.error('Error saving security settings:', error);
+                    this.showToast('Error saving security settings', 'error');
+                }
+            }
+
+            async hashString(str) {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(str);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+
+            getSecurityQuestion(key) {
+                const questions = {
+                    'pet': 'What was the name of your first pet?',
+                    'school': 'What was the name of your first school?',
+                    'city': 'In which city were you born?',
+                    'mother': 'What is your mother\'s maiden name?',
+                    'friend': 'What was the name of your best childhood friend?',
+                    'car': 'What was the model of your first car?',
+                    'teacher': 'What was the name of your favorite teacher?',
+                    'street': 'On which street did you grow up?',
+                    'book': 'What is your favorite book?',
+                    'movie': 'What is your favorite movie?',
+                    'food': 'What is your favorite food?',
+                    'sport': 'What is your favorite sport?',
+                    'subject': 'What was your favorite school subject?',
+                    'nickname': 'What was your childhood nickname?',
+                    'company': 'What was the name of your first company/job?'
+                };
+                return questions[key] || 'Security Question';
+            }
+
+            showSecurityQuestion() {
+                this.hideAllInputDivs();
+                this.securityQuestionDiv.classList.remove('hidden');
+                
+                const security = JSON.parse(localStorage.getItem('vaultSecurity'));
+                const questionText = this.getSecurityQuestion(security.question);
+                this.questionLabel.textContent = questionText;
+                
+                // Update modal title and message for security question context
+                this.modalTitle.textContent = 'PIN Recovery - Security Question';
+                this.modalMessage.textContent = 'Please answer your security question to reset your PIN. Your answer is not case-sensitive.';
+                this.modalIcon.className = 'fas fa-question-circle text-blue-600 dark:text-blue-400 text-2xl mr-3';
+                
+                this.securityState = 'security';
+                this.modalInputs.classList.remove('hidden');
+                this.modalSecurityAnswer.focus();
+            }
+
+            showPinReset() {
+                this.hideAllInputDivs();
+                this.pinResetDiv.classList.remove('hidden');
+                
+                // Update modal for PIN reset context
+                this.modalTitle.textContent = 'Reset PIN';
+                this.modalMessage.textContent = 'Security question verified successfully! Please enter your new 4-digit PIN.';
+                this.modalIcon.className = 'fas fa-key text-green-600 dark:text-green-400 text-2xl mr-3';
+                
+                this.securityState = 'reset';
+                this.modalInputs.classList.remove('hidden');
+                this.newPinInput.focus();
+            }
+
+            hideAllInputDivs() {
+                this.pinInputDiv.classList.add('hidden');
+                this.securityQuestionDiv.classList.add('hidden');
+                this.pinResetDiv.classList.add('hidden');
+                this.confirmationTextDiv.classList.add('hidden');
+                
+                // Clear error messages
+                this.pinError.classList.add('hidden');
+                this.securityError.classList.add('hidden');
+                this.confirmationError.classList.add('hidden');
+            }
+
+            async handleModalConfirm() {
+                try {
+                    if (this.securityState === 'pin') {
+                        await this.validatePin();
+                    } else if (this.securityState === 'security') {
+                        await this.validateSecurityAnswer();
+                    } else if (this.securityState === 'reset') {
+                        await this.resetPin();
+                    } else if (this.securityState === 'vault-clear') {
+                        await this.validateVaultClear();
+                    } else {
+                        this.hideModal(true);
+                    }
+                } catch (error) {
+                    console.error('Error in modal confirm:', error);
+                }
+            }
+
+            async validatePin() {
+                const enteredPin = this.modalPinInput.value.trim();
+                if (enteredPin.length !== 4) {
+                    this.pinError.classList.remove('hidden');
+                    return;
+                }
+
+                const security = JSON.parse(localStorage.getItem('vaultSecurity'));
+                const hashedEnteredPin = await this.hashString(enteredPin);
+
+                if (hashedEnteredPin === security.pin) {
+                    this.hideModal(true);
+                } else {
+                    this.pinError.classList.remove('hidden');
+                    this.modalPinInput.value = '';
+                }
+            }
+
+            async validateSecurityAnswer() {
+                const enteredAnswer = this.modalSecurityAnswer.value.trim().toLowerCase();
+                if (enteredAnswer.length < 2) {
+                    this.securityError.classList.remove('hidden');
+                    return;
+                }
+
+                const security = JSON.parse(localStorage.getItem('vaultSecurity'));
+                const hashedAnswer = await this.hashString(enteredAnswer);
+
+                if (hashedAnswer === security.answer) {
+                    this.showPinReset();
+                } else {
+                    this.securityError.classList.remove('hidden');
+                    this.modalSecurityAnswer.value = '';
+                }
+            }
+
+            async resetPin() {
+                const newPin = this.newPinInput.value.trim();
+                if (newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
+                    this.showToast('New PIN must be exactly 4 digits', 'error');
+                    return;
+                }
+
+                const security = JSON.parse(localStorage.getItem('vaultSecurity'));
+                security.pin = await this.hashString(newPin);
+                localStorage.setItem('vaultSecurity', JSON.stringify(security));
+
+                this.showToast('PIN reset successfully!');
+                this.hideModal(true);
+            }
+
+            async validateVaultClear() {
+                const enteredText = this.confirmationTextInput.value.trim();
+                const requiredText = "DELETE ALL PASSWORDS";
+
+                if (enteredText !== requiredText) {
+                    this.confirmationError.classList.remove('hidden');
+                    return;
+                }
+
+                // First validate PIN
+                const enteredPin = this.modalPinInput.value.trim();
+                if (enteredPin.length !== 4) {
+                    this.pinError.classList.remove('hidden');
+                    return;
+                }
+
+                const security = JSON.parse(localStorage.getItem('vaultSecurity'));
+                const hashedEnteredPin = await this.hashString(enteredPin);
+
+                if (hashedEnteredPin === security.pin) {
+                    this.hideModal(true);
+                } else {
+                    this.pinError.classList.remove('hidden');
+                    this.modalPinInput.value = '';
+                }
+            }
+
+            async requestPinForDeletion(action, message, title) {
+                return new Promise((resolve) => {
+                    this.modalResolver = resolve;
+                    this.currentDeleteAction = action;
+
+                    // Set modal content
+                    this.modalTitle.textContent = title;
+                    this.modalMessage.textContent = message;
+                    this.modalIcon.className = 'fas fa-lock text-red-600 dark:text-red-400 text-2xl mr-3';
+
+                    // Show PIN input
+                    this.hideAllInputDivs();
+                    this.pinInputDiv.classList.remove('hidden');
+                    this.modalInputs.classList.remove('hidden');
+                    this.securityState = 'pin';
+
+                    // Show modal
+                    this.modal.classList.remove('hidden');
+                    this.modal.classList.add('animate-modal-fade-in');
+                    this.modalContent.classList.add('animate-modal-scale-in');
+
+                    // Focus PIN input
+                    setTimeout(() => this.modalPinInput.focus(), 100);
+                });
+            }
+
+            async requestPinForVaultClear() {
+                return new Promise((resolve) => {
+                    this.modalResolver = resolve;
+
+                    // Set modal content
+                    this.modalTitle.textContent = 'Clear Complete Vault';
+                    this.modalMessage.textContent = 'This will permanently delete ALL saved passwords. This action cannot be undone. Enter your PIN and confirmation text to proceed.';
+                    this.modalIcon.className = 'fas fa-exclamation-triangle text-red-600 dark:text-red-400 text-2xl mr-3';
+
+                    // Show PIN and confirmation inputs
+                    this.hideAllInputDivs();
+                    this.pinInputDiv.classList.remove('hidden');
+                    this.confirmationTextDiv.classList.remove('hidden');
+                    this.modalInputs.classList.remove('hidden');
+                    this.securityState = 'vault-clear';
+
+                    // Show modal
+                    this.modal.classList.remove('hidden');
+                    this.modal.classList.add('animate-modal-fade-in');
+                    this.modalContent.classList.add('animate-modal-scale-in');
+
+                    // Focus PIN input
+                    setTimeout(() => this.modalPinInput.focus(), 100);
+                });
+            }
+
+            showModal(title, message, type = 'confirm') {
                 return new Promise((resolve) => {
                     this.modalResolver = resolve;
                     
                     // Set modal content
-                    if (this.modalTitle) this.modalTitle.textContent = title;
-                    if (this.modalMessage) this.modalMessage.textContent = message;
+                    this.modalTitle.textContent = title;
+                    this.modalMessage.textContent = message;
                     
                     // Set icon based on type
-                    if (this.modalIcon) {
-                        switch (type) {
-                            case 'confirm':
-                                this.modalIcon.className = 'fas fa-question-circle text-blue-600 dark:text-blue-400 text-2xl mr-3';
-                                break;
-                            case 'alert':
-                                this.modalIcon.className = 'fas fa-exclamation-circle text-yellow-600 dark:text-yellow-400 text-2xl mr-3';
-                                break;
-                            case 'error':
-                                this.modalIcon.className = 'fas fa-times-circle text-red-600 dark:text-red-400 text-2xl mr-3';
-                                break;
-                            case 'prompt':
-                                this.modalIcon.className = 'fas fa-edit text-green-600 dark:text-green-400 text-2xl mr-3';
-                                break;
-                        }
+                    switch (type) {
+                        case 'confirm':
+                            this.modalIcon.className = 'fas fa-question-circle text-blue-600 dark:text-blue-400 text-2xl mr-3';
+                            break;
+                        case 'alert':
+                            this.modalIcon.className = 'fas fa-exclamation-circle text-yellow-600 dark:text-yellow-400 text-2xl mr-3';
+                            break;
+                        case 'error':
+                            this.modalIcon.className = 'fas fa-times-circle text-red-600 dark:text-red-400 text-2xl mr-3';
+                            break;
                     }
                     
-                    // Handle input field for prompt
-                    if (type === 'prompt' && this.modalInput && this.modalInputField && this.modalInputLabel) {
-                        this.modalInput.classList.remove('hidden');
-                        this.modalInputLabel.textContent = inputLabel;
-                        this.modalInputField.value = defaultValue;
-                        setTimeout(() => {
-                            this.modalInputField.focus();
-                            this.modalInputField.select();
-                        }, 100);
-                    } else if (this.modalInput) {
-                        this.modalInput.classList.add('hidden');
-                    }
+                    // Hide input sections
+                    this.modalInputs.classList.add('hidden');
                     
                     // Show modal
-                    if (this.modal) {
-                        this.modal.classList.remove('hidden');
-                        this.modal.classList.add('animate-modal-fade-in');
-                    }
-                    
-                    if (this.modalContent) {
-                        this.modalContent.classList.add('animate-modal-scale-in');
-                    }
+                    this.modal.classList.remove('hidden');
+                    this.modal.classList.add('animate-modal-fade-in');
+                    this.modalContent.classList.add('animate-modal-scale-in');
                 });
             }
 
@@ -716,6 +1127,17 @@
                 if (this.modalContent) {
                     this.modalContent.classList.remove('animate-modal-scale-in');
                 }
+
+                // Reset modal state
+                this.securityState = 'pin';
+                this.hideAllInputDivs();
+                this.modalInputs.classList.add('hidden');
+                
+                // Clear input values
+                if (this.modalPinInput) this.modalPinInput.value = '';
+                if (this.modalSecurityAnswer) this.modalSecurityAnswer.value = '';
+                if (this.newPinInput) this.newPinInput.value = '';
+                if (this.confirmationTextInput) this.confirmationTextInput.value = '';
                 
                 if (this.modalResolver) {
                     this.modalResolver(result);
@@ -729,10 +1151,6 @@
 
             async customConfirm(message, title = 'Confirm') {
                 return await this.showModal(title, message, 'confirm');
-            }
-
-            async customPrompt(message, title = 'Input', inputLabel = 'Enter value:', defaultValue = '') {
-                return await this.showModal(title, message, 'prompt', inputLabel, defaultValue);
             }
 
             toggleTheme() {
@@ -1123,7 +1541,7 @@
                             entriesHtml += '<div class="flex-1 min-w-0">';
                             // App name with icon
                             entriesHtml += '<div class="flex items-center mb-1">';
-                            entriesHtml += '<i class="fas fa-globe text-blue-600 dark:text-blue-400 mr-2 text-sm"></i>';
+                            entriesHtml += '<i class="fas fa-cubes text-orange-600 dark:text-orange-400 mr-2 text-sm"></i>';
                             entriesHtml += '<h4 class="font-medium text-gray-800 dark:text-gray-100 truncate">' + this.escapeHtml(entry.app) + '</h4>';
                             entriesHtml += '</div>';
                             // Username with icon
@@ -1144,7 +1562,6 @@
                             entriesHtml += '<div class="flex flex-wrap items-center gap-2 lg:ml-4">';
                             entriesHtml += '<input type="password" value="' + this.escapeHtml(entry.password) + '" class="w-full sm:w-32 lg:w-40 p-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 text-gray-800 dark:text-gray-100 rounded-lg font-mono text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200" readonly>';
                             entriesHtml += '<div class="flex space-x-2">';
-                            entriesHtml += '<button onclick="window.passwordGen.editPassword(' + entry.id + ')" class="px-2 sm:px-3 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-all duration-200 transform hover:scale-105"><i class="fas fa-edit text-sm"></i></button>';
                             entriesHtml += '<button onclick="window.passwordGen.togglePasswordVisibility(this)" class="px-2 sm:px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-all duration-200 transform hover:scale-105"><i class="fas fa-eye text-sm"></i></button>';
                             entriesHtml += '<button onclick="window.passwordGen.copyVaultPassword(\'' + this.escapeHtml(entry.password) + '\')" class="px-2 sm:px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 transform hover:scale-105"><i class="fas fa-copy text-sm"></i></button>';
                             entriesHtml += '<button onclick="window.passwordGen.deleteVaultEntry(' + entry.id + ')" class="px-2 sm:px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 transform hover:scale-105"><i class="fas fa-trash text-sm"></i></button>';
@@ -1165,37 +1582,6 @@
                 if (strength >= 60) return 'bg-blue-500';
                 if (strength >= 40) return 'bg-yellow-500';
                 return 'bg-red-500';
-            }
-
-            async editPassword(id) {
-                try {
-                    let vault = JSON.parse(localStorage.getItem('passwordVault') || '[]');
-                    const entry = vault.find(item => item.id === id);
-                    
-                    if (entry) {
-                        const newPassword = await this.customPrompt(
-                            'Enter a new password for ' + entry.app,
-                            'Edit Password',
-                            'New Password:',
-                            entry.password
-                        );
-                        
-                        if (newPassword && newPassword.trim() !== '') {
-                            entry.password = newPassword.trim();
-                            entry.strength = this.calculateStrength(entry.password);
-                            
-                            // Update vault in localStorage
-                            localStorage.setItem('passwordVault', JSON.stringify(vault));
-                            
-                            // Re-render vault
-                            this.renderVault();
-                            this.showToast('Password updated successfully!');
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error editing password:', error);
-                    this.showToast('Error updating password', 'error');
-                }
             }
 
             togglePasswordVisibility(button) {
@@ -1229,17 +1615,22 @@
 
             async deleteVaultEntry(id) {
                 try {
-                    const confirmed = await this.customConfirm(
-                        'Are you sure you want to delete this password? This action cannot be undone.',
+                    const vault = JSON.parse(localStorage.getItem('passwordVault') || '[]');
+                    const entry = vault.find(item => item.id === id);
+                    
+                    if (!entry) return;
+
+                    const confirmed = await this.requestPinForDeletion(
+                        'delete',
+                        `Are you sure you want to delete the password for "${entry.app}"? This action cannot be undone. Please enter your PIN to confirm.`,
                         'Delete Password'
                     );
                     
                     if (confirmed) {
-                        let vault = JSON.parse(localStorage.getItem('passwordVault') || '[]');
-                        vault = vault.filter(entry => entry.id !== id);
-                        localStorage.setItem('passwordVault', JSON.stringify(vault));
+                        const updatedVault = vault.filter(item => item.id !== id);
+                        localStorage.setItem('passwordVault', JSON.stringify(updatedVault));
                         this.renderVault();
-                        this.showToast('Password deleted!');
+                        this.showToast('Password deleted successfully!');
                     }
                 } catch (error) {
                     console.error('Error deleting vault entry:', error);
@@ -1253,15 +1644,12 @@
 
             async clearAllVault() {
                 try {
-                    const confirmed = await this.customConfirm(
-                        'Are you sure you want to clear all passwords? This action cannot be undone and will permanently delete all saved passwords.',
-                        'Clear All Passwords'
-                    );
+                    const confirmed = await this.requestPinForVaultClear();
                     
                     if (confirmed) {
                         localStorage.removeItem('passwordVault');
                         this.renderVault();
-                        this.showToast('Vault cleared!');
+                        this.showToast('Vault cleared successfully!');
                     }
                 } catch (error) {
                     console.error('Error clearing vault:', error);
@@ -1348,7 +1736,7 @@
             }
         });
     </script>
-       <script>
+    <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('./service-worker.js')
@@ -1361,5 +1749,6 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+    
 </body>
 </html>
